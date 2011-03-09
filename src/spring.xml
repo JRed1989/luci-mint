@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	
+	<bean id="defaultAnalzyer" class="org.wltea.analyzer.lucene.IKAnalyzer"></bean>
+
+	<bean id="bbsIndexEliminatePolicy" class="org.wltea.luci.sample.BBSIndexEliminatePolicy"></bean>
+
+	<bean id="bbsIndexConfig" class="org.wltea.luci.index.IndexConfig">
+		<property name="indexName" value="BBS" />
+		<property name="keyFieldName" value="uuid" />
+		<property name="rootDir" value="E:/sohufz/index/bbs/" />
+		<property name="luceneAnalyzer" ref="defaultAnalzyer" />
+		<property name="enableBackup" value="true" />
+		<property name="eliminatePolicy" ref="bbsIndexEliminatePolicy" />
+	</bean>
+	
+	<!-- 索引控制器配置  -->
+	<bean id="LuciMint.IndexContextContainer" class="org.wltea.luci.index.IndexContextContainer" init-method="getInstance" >
+		<property name="indexConfigs">
+			<list>
+				<ref bean="bbsIndexConfig"/>
+			</list>	
+		</property>
+	</bean>
+</beans>
