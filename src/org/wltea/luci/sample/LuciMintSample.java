@@ -3,6 +3,7 @@
  */
 package org.wltea.luci.sample;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +40,11 @@ public class LuciMintSample {
 			bean.setUrl("http://sample.lucimint.org");
 			bean.setUserName("LuciMint" + i);
 			bean.setUuid(20000 + i);
-			indexService.add(bean);
+			try {
+				indexService.add(bean);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		try {
@@ -53,17 +58,24 @@ public class LuciMintSample {
 		//**********************************查询部分
 		//编写查询逻辑
 		String queryString = "url='http://sample.lucimint.org'";
-		QueryResults queryResults = indexService.query(queryString, 1, 20, true);
-		System.out.println("PageNo :" + queryResults.getPageNo());
-		System.out.println("PageSize :" + queryResults.getPageSize());
-		System.out.println("TotalHit :" + queryResults.getTotalHit());
-		System.out.println("TotalPage :" + queryResults.getTotalPage());
-		
-		List<SampleJavaBean> beanList = queryResults.getResultBeans(SampleJavaBean.class); //读取具体的数据列表
-		
-		for(SampleJavaBean bean : beanList){
-			System.out.println(bean.getUuid() + " | " +bean.getUserName());
+		QueryResults queryResults;
+		try {
+			queryResults = indexService.query(queryString, 1, 20, true);
+			System.out.println("PageNo :" + queryResults.getPageNo());
+			System.out.println("PageSize :" + queryResults.getPageSize());
+			System.out.println("TotalHit :" + queryResults.getTotalHit());
+			System.out.println("TotalPage :" + queryResults.getTotalPage());
+			
+			List<SampleJavaBean> beanList = queryResults.getResultBeans(SampleJavaBean.class); //读取具体的数据列表
+			
+			for(SampleJavaBean bean : beanList){
+				System.out.println(bean.getUuid() + " | " +bean.getUserName());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 		
 	}
 }

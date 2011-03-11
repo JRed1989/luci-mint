@@ -44,7 +44,7 @@ public class RemoteIndexService implements IndexService {
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#build(java.lang.Object)
 	 */
-	public void build(Object dataBean) {
+	public void build(Object dataBean) throws IOException {
 		if(dataBean == null){
 			return ;
 		}
@@ -56,23 +56,19 @@ public class RemoteIndexService implements IndexService {
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#build(java.util.List)
 	 */
-	public void build(List<?> dataBeanList) {
+	public void build(List<?> dataBeanList) throws IOException {
 		if(dataBeanList == null || dataBeanList.isEmpty()){
 			return;
 		}
 		String xmlData = XMLDataFormatter.createXMLfromBeans(dataBeanList);
-		try {
-			this.postIndexCommand("build", xmlData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.postIndexCommand("build", xmlData);
 	}
 	
 
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#backup(java.lang.Object)
 	 */
-	public void backup(Object dataBean) {
+	public void backup(Object dataBean) throws IOException {
 		if(dataBean == null){
 			return ;
 		}
@@ -84,22 +80,18 @@ public class RemoteIndexService implements IndexService {
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#backup(java.util.List)
 	 */
-	public void backup(List<?> dataBeanList) {
+	public void backup(List<?> dataBeanList) throws IOException {
 		if(dataBeanList == null || dataBeanList.isEmpty()){
 			return;
 		}
 		String xmlData = XMLDataFormatter.createXMLfromBeans(dataBeanList);
-		try {
-			this.postIndexCommand("backup", xmlData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.postIndexCommand("backup", xmlData);
 	}	
 
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#add(java.lang.Object)
 	 */
-	public void add(Object dataBean) {
+	public void add(Object dataBean) throws IOException {
 		if(dataBean == null){
 			return ;
 		}
@@ -111,23 +103,19 @@ public class RemoteIndexService implements IndexService {
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#add(java.util.List)
 	 */
-	public void add(List<?> dataBeanList) {
+	public void add(List<?> dataBeanList) throws IOException {
 		if(dataBeanList == null || dataBeanList.isEmpty()){
 			return;
 		}
 		String xmlData = XMLDataFormatter.createXMLfromBeans(dataBeanList);
-		try {
-			this.postIndexCommand("add", xmlData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.postIndexCommand("add", xmlData);
 	}
 
 
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#update(java.lang.Object)
 	 */
-	public void update(Object dataBean) {
+	public void update(Object dataBean) throws IOException {
 		if(dataBean == null){
 			return ;
 		}
@@ -139,22 +127,18 @@ public class RemoteIndexService implements IndexService {
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#update(java.util.List)
 	 */
-	public void update(List<?> dataBeanList) {
+	public void update(List<?> dataBeanList) throws IOException {
 		if(dataBeanList == null || dataBeanList.isEmpty()){
 			return;
 		}
 		String xmlData = XMLDataFormatter.createXMLfromBeans(dataBeanList);
-		try {
-			this.postIndexCommand("update", xmlData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.postIndexCommand("update", xmlData);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#delete(java.lang.Object)
 	 */
-	public void delete(Object dataBean) {
+	public void delete(Object dataBean) throws IOException {
 		if(dataBean == null){
 			return ;
 		}
@@ -166,106 +150,78 @@ public class RemoteIndexService implements IndexService {
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#delete(java.util.List)
 	 */
-	public void delete(List<?> dataBeanList) {
+	public void delete(List<?> dataBeanList) throws IOException {
 		if(dataBeanList == null || dataBeanList.isEmpty()){
 			return;
 		}
 		String xmlData = XMLDataFormatter.createXMLfromBeans(dataBeanList);
-		try {
-			this.postIndexCommand("delete", xmlData);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.postIndexCommand("delete", xmlData);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#optimize(boolean)
 	 */
-	public void optimize(boolean immediately) {
-		try {
-			this.postOptimizeCommand("optimize", immediately);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void optimize(boolean immediately) throws IOException {
+		this.postOptimizeCommand("optimize", immediately);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#optimizeBackup(boolean)
 	 */
-	public void optimizeBackup(boolean immediately) {
-		try {
-			this.postOptimizeCommand("optimizeBackup", immediately);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void optimizeBackup(boolean immediately) throws IOException {
+		this.postOptimizeCommand("optimizeBackup", immediately);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#query(java.lang.String, int, int, boolean, java.lang.Class)
 	 */
 	public QueryResults query(String queryString, int pageNo,
-			int pageSize, boolean reverse) {
-		try {
-			String jsonResponse = this.postQueryCommand("query", queryString, pageNo, pageSize, reverse, null, null);
-			//JSON输出反序列化
-		    ObjectMapper mapper = new ObjectMapper();
-		    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES , false);
-		    QueryResults queryResult = mapper.readValue(jsonResponse, QueryResults.class);
-			return queryResult;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+			int pageSize, boolean reverse) throws IOException {
+		String jsonResponse = this.postQueryCommand("query", queryString, pageNo, pageSize, reverse, null, null);
+		//JSON输出反序列化
+	    ObjectMapper mapper = new ObjectMapper();
+	    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES , false);
+	    QueryResults queryResult = mapper.readValue(jsonResponse, QueryResults.class);
+		return queryResult;
 	}
 
 	public QueryResults query(String queryString, int pageNo,
 			int pageSize, boolean reverse, String sortFieldName,
-			String sortFieldType) {
-		try {
-			String jsonResponse = this.postQueryCommand("query", queryString, pageNo, pageSize, reverse, sortFieldName, sortFieldType);
-			//JSON输出反序列化
-		    ObjectMapper mapper = new ObjectMapper();
-		    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES , false);
-		    QueryResults queryResult = mapper.readValue(jsonResponse, QueryResults.class);
-			return queryResult;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+			String sortFieldType) throws IOException {
+		String jsonResponse = this.postQueryCommand("query", queryString, pageNo, pageSize, reverse, sortFieldName, sortFieldType);
+		//JSON输出反序列化
+	    ObjectMapper mapper = new ObjectMapper();
+	    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES , false);
+	    QueryResults queryResult = mapper.readValue(jsonResponse, QueryResults.class);
+		return queryResult;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.wltea.luci.client.IndexService#queryBackup(java.lang.String, int, int, boolean, java.lang.Class)
 	 */
 	public QueryResults queryBackup(String queryString, int pageNo,
-			int pageSize, boolean reverse) {
-		try {
-			String jsonResponse = this.postQueryCommand("queryBackup", queryString, pageNo, pageSize, reverse, null, null);
-			//JSON输出反序列化
-		    ObjectMapper mapper = new ObjectMapper();
-		    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES , false);
-		    QueryResults queryResult = mapper.readValue(jsonResponse, QueryResults.class);
-			return queryResult;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+			int pageSize, boolean reverse) throws IOException {
+		String jsonResponse = this.postQueryCommand("queryBackup", queryString, pageNo, pageSize, reverse, null, null);
+		//JSON输出反序列化
+	    ObjectMapper mapper = new ObjectMapper();
+	    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES , false);
+	    QueryResults queryResult = mapper.readValue(jsonResponse, QueryResults.class);
+		return queryResult;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.wltea.luci.client.IndexService#queryBackup(java.lang.String, int, int, boolean, java.lang.String, java.lang.String)
+	 */
 	public QueryResults queryBackup(String queryString, int pageNo,
 			int pageSize, boolean reverse, String sortFieldName,
-			String sortFieldType) {
-		try {
-			String jsonResponse = this.postQueryCommand("queryBackup", queryString, pageNo, pageSize, reverse, sortFieldName, sortFieldType);
-			//JSON输出反序列化
-		    ObjectMapper mapper = new ObjectMapper();
-		    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES , false);
-		    QueryResults queryResult = mapper.readValue(jsonResponse, QueryResults.class);
-			return queryResult;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+			String sortFieldType) throws IOException {
+		String jsonResponse = this.postQueryCommand("queryBackup", queryString, pageNo, pageSize, reverse, sortFieldName, sortFieldType);
+		//JSON输出反序列化
+	    ObjectMapper mapper = new ObjectMapper();
+	    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES , false);
+	    QueryResults queryResult = mapper.readValue(jsonResponse, QueryResults.class);
+		return queryResult;
 	}	
 
 	/**

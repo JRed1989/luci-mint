@@ -3,6 +3,7 @@
  */
 package org.wltea.lucene.test;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -70,16 +71,22 @@ public class LuciMintRPCSample {
 		//**********************************查询部分
 		//编写查询逻辑
 		String queryString = "uuid='30008'";
-		QueryResults queryResults = indexService.query(queryString, 1, 20, true);
-		System.out.println("PageNo :" + queryResults.getPageNo());
-		System.out.println("PageSize :" + queryResults.getPageSize());
-		System.out.println("TotalHit :" + queryResults.getTotalHit());
-		System.out.println("TotalPage :" + queryResults.getTotalPage());
-		
-		List<SampleJavaBean> beanList = queryResults.getResultBeans(SampleJavaBean.class); //读取具体的数据列表
-		
-		for(SampleJavaBean b : beanList){
-			System.out.println(b.getUuid() + " | " +b.getUserName());
+		QueryResults queryResults;
+		try {
+			queryResults = indexService.query(queryString, 1, 20, true);
+			System.out.println("PageNo :" + queryResults.getPageNo());
+			System.out.println("PageSize :" + queryResults.getPageSize());
+			System.out.println("TotalHit :" + queryResults.getTotalHit());
+			System.out.println("TotalPage :" + queryResults.getTotalPage());
+			
+			List<SampleJavaBean> beanList = queryResults.getResultBeans(SampleJavaBean.class); //读取具体的数据列表
+			
+			for(SampleJavaBean b : beanList){
+				System.out.println(b.getUuid() + " | " +b.getUserName());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

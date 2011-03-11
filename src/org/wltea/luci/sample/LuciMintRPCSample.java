@@ -3,6 +3,7 @@
  */
 package org.wltea.luci.sample;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
@@ -44,7 +45,11 @@ public class LuciMintRPCSample {
             bean.setUserName("LuciMint" + i);   
             bean.setUuid(20000 + i);   
              //新增索引   
-            indexService.add(bean);   
+            try {
+				indexService.add(bean);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}   
         }   
            
         try {   
@@ -58,18 +63,24 @@ public class LuciMintRPCSample {
         //编写查询逻辑   
         String queryString = "url='http://sample.lucimint.org'";   
          //查询索引也只要一句,    
-        QueryResults queryResults = indexService.query(queryString, 1, 20, true);   
-        System.out.println("PageNo :" + queryResults.getPageNo());   
-        System.out.println("PageSize :" + queryResults.getPageSize());   
-        System.out.println("TotalHit :" + queryResults.getTotalHit());   
-        System.out.println("TotalPage :" + queryResults.getTotalPage());   
-        //读取具体的数据列表 , 传入你的bean类型，Luci将帮你封装好结果集   
-        List<SampleJavaBean> beanList = queryResults.getResultBeans(SampleJavaBean.class);   
-           
-           
-        for(SampleJavaBean bean : beanList){   
-            System.out.println(bean.getUuid() + " | " +bean.getUserName());   
-        }   
+        QueryResults queryResults;
+		try {
+			queryResults = indexService.query(queryString, 1, 20, true);
+	        System.out.println("PageNo :" + queryResults.getPageNo());   
+	        System.out.println("PageSize :" + queryResults.getPageSize());   
+	        System.out.println("TotalHit :" + queryResults.getTotalHit());   
+	        System.out.println("TotalPage :" + queryResults.getTotalPage());   
+	        //读取具体的数据列表 , 传入你的bean类型，Luci将帮你封装好结果集   
+	        List<SampleJavaBean> beanList = queryResults.getResultBeans(SampleJavaBean.class);   
+	           
+	           
+	        for(SampleJavaBean bean : beanList){   
+	            System.out.println(bean.getUuid() + " | " +bean.getUserName());   
+	        }
+	        
+		} catch (IOException e) {
+			e.printStackTrace();
+		}   
 
 	}
 	

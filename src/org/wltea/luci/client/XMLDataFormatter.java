@@ -83,7 +83,7 @@ public class XMLDataFormatter extends BasicDataFormatter{
 			if(docFieldValue != null){
 				Element_Field eleField = new Element_Field();
 				eleField.name = beanField.getName();
-				eleField.value = escapeHTMLTag(regularizeXmlString(docFieldValue));
+				eleField.value = regularizeXmlString(docFieldValue);
 					
 				//处理PKey属性
 				PKey pKeyAnno = beanField.getAnnotation(PKey.class);
@@ -216,11 +216,32 @@ public class XMLDataFormatter extends BasicDataFormatter{
 			return emptyString;
 		}
 		String result = strInput.replaceAll("[\\x00-\\x08|\\x0b-\\x0c|\\x0e-\\x1f]",emptyString);
+		//CDATA要先于HTML过滤
+		result = escapeCDATA(result);
+		//HTML过滤
+		result = escapeHTMLTag(result);
+		//&nbsp;类型过滤
+		result = escapeNBSP(result);
+		return result;
+	}
+	
+	
+	/**
+	 * 过滤CDATA标签
+	 * @param strInput
+	 * @return
+	 */
+	public static String escapeCDATA(String strInput){
+		String emptyString = "";
+		if(strInput == null || strInput.length() == 0){
+			return emptyString;
+		}
+		String result = strInput.replaceAll("<!\\[CDATA\\[.*?\\]\\]>",emptyString);
 		return result;
 	}
 	
 	/**
-	 * 过来HTML标签
+	 * 过滤HTML标签
 	 * @param strInput
 	 * @return
 	 */
@@ -231,6 +252,28 @@ public class XMLDataFormatter extends BasicDataFormatter{
 		}
 		String result = strInput.replaceAll("<[^>]*>",emptyString);
 		return result;
+	}
+	
+	/**
+	 * 过滤&nbsp;标签
+	 * @param strInput
+	 * @return
+	 */
+	public static String escapeNBSP(String strInput){
+		String emptyString = "";
+		if(strInput == null || strInput.length() == 0){
+			return emptyString;
+		}
+		String result = strInput.replaceAll("&[a-z0-9#]+;",emptyString);
+		return result;		
+	}
+	
+	
+	public static void main(String[] args){
+//		String testStr = "<field name=\"url\" store=\"true\"><![CDATA[http://www.>sohu]sdfa.]]>com]]></field>";
+//		System.out.println(XMLDataFormatter.escapeCDATA(testStr));		
+		String testStr = "<field name=\"url\" store=\"true\"><![CDATA[&nbsp; 你好&gt;测试&lte; ]]></field>";
+		System.out.println(XMLDataFormatter.escapeNBSP(testStr));		
 	}
 	
 }
