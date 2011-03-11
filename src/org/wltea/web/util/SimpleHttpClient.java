@@ -65,7 +65,8 @@ public class SimpleHttpClient {
 			urlconn = (HttpURLConnection)httpURL.openConnection();
 			//0.初始化连接
 			urlconn.setConnectTimeout(3000);
-			urlconn.setReadTimeout(3000);
+			//更改ReadTimeOut，30分钟（当索引因为批量写入，可能出现optimization时，conn要支持阻塞）
+			urlconn.setReadTimeout(30*60*1000);
 			urlconn.setRequestMethod("POST");
 			urlconn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + encoding);
 			urlconn.setDoInput(true);
