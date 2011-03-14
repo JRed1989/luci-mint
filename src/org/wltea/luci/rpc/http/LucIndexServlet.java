@@ -99,7 +99,12 @@ public class LucIndexServlet extends HttpServlet {
 			return;
 		}
 		//根据indexName加载索引上下文
-		IndexContext indexContext = IndexContextContainer.loadIndexContext(indexName);		
+		IndexContext indexContext = IndexContextContainer.loadIndexContext(indexName);
+		if(indexContext == null){
+			errorMessage = "No Found index named '" + indexName + "'";
+			this.outputError(response , errorMessage);
+			return;
+		}
 				
 		//build ： 新建索引
 		if("build".equalsIgnoreCase(operate)){
