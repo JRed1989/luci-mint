@@ -6,6 +6,7 @@ package org.wltea.luci.client;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.wltea.luci.annotation.FieldIndex;
 import org.wltea.luci.annotation.FieldStore;
@@ -236,7 +237,8 @@ public class XMLDataFormatter extends BasicDataFormatter{
 		if(strInput == null || strInput.length() == 0){
 			return emptyString;
 		}
-		String result = strInput.replaceAll("<!\\[CDATA\\[.*?\\]\\]>",emptyString);
+		String result = Pattern.compile("<!\\[CDATA\\[.*?\\]\\]>" , Pattern.DOTALL)
+								.matcher(strInput).replaceAll(emptyString);
 		return result;
 	}
 	
@@ -270,10 +272,8 @@ public class XMLDataFormatter extends BasicDataFormatter{
 	
 	
 	public static void main(String[] args){
-//		String testStr = "<field name=\"url\" store=\"true\"><![CDATA[http://www.>sohu]sdfa.]]>com]]></field>";
-//		System.out.println(XMLDataFormatter.escapeCDATA(testStr));		
-		String testStr = "<field name=\"url\" store=\"true\"><![CDATA[&nbsp; 你好&gt;测试&lte; ]]></field>";
-		System.out.println(XMLDataFormatter.escapeNBSP(testStr));		
+		String testStr = "<field name=\"url\" store=\"true\"><![CDATA[http://www.>sohu]sdfa.]]>com]]></field>";
+		System.out.println(XMLDataFormatter.regularizeXmlString(testStr));		
 	}
 	
 }
