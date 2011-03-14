@@ -321,11 +321,11 @@ class MainIndexController implements Runnable {
 		try{
 			indexWriter = this.openWriter(dir , false);
 			long begin = System.currentTimeMillis();
-			System.out.println("Main index optimization beign at " + new Date(begin));
+			System.out.println(this.name + " optimization beign at " + new Date(begin));
 			//通知context，主索引开始优化
 			this.context.notifyMainIndexOpt(true);
 			indexWriter.optimize();
-			System.out.println("Main index optimization end at " + new Date(begin) + " cost " + (System.currentTimeMillis() - begin) + " ms.");
+			System.out.println(this.name + " optimization end at " + new Date(begin) + " cost " + (System.currentTimeMillis() - begin) + " ms.");
 		}catch (IOException e) {
 			e.printStackTrace();	
 		}finally{

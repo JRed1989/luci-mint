@@ -384,11 +384,11 @@ class MemoryIndexController implements Runnable{
 		try{
 			indexWriter = this.openWriter(dir , false);
 			long begin = System.currentTimeMillis();
-			System.out.println("Memory index optimization beign at " + new Date(begin));
+			System.out.println(this.name + " optimization beign at " + new Date(begin));
 			//通知context，主索引开始优化
 			this.context.notifyMemoryIndexOpt(true);
 			indexWriter.optimize();
-			System.out.println("Memory index optimization cost " + (System.currentTimeMillis() - begin) + " ms.");
+			System.out.println(this.name + " optimization cost " + (System.currentTimeMillis() - begin) + " ms.");
 		}catch (IOException e) {
 			e.printStackTrace();	
 		}finally{
