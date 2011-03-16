@@ -241,7 +241,12 @@ class MemoryIndexController implements Runnable{
 				if(Operate.CLEAR == command.getOperate()){
 					continue;
 				}
-				this.context.getMainIndexController().sendCommand(command, false);
+				//Operate.DELETE指令立即执行
+				if(Operate.DELETE == command.getOperate()){
+					this.context.getMainIndexController().sendCommand(command, true);
+				}else{
+					this.context.getMainIndexController().sendCommand(command, false);
+				}
 			}			
 			//索引变更到一定数量,触发内存索引优化
 			if(this.updateCount >= 4096){
