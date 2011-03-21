@@ -157,7 +157,7 @@ public class HttpRequestHelper {
 		try {
 			defaultNum = Integer.parseInt(temp);
 		} catch (Exception ex) {
-			System.err.println(ex.toString());
+			ex.printStackTrace();
 		}
 		return defaultNum;
 	}
@@ -178,7 +178,7 @@ public class HttpRequestHelper {
 		try {
 			defaultNum = Float.parseFloat(temp);
 		} catch (Exception ex) {
-			System.err.println(ex.toString());
+			ex.printStackTrace();
 		}
 		return defaultNum;
 	}
@@ -200,7 +200,7 @@ public class HttpRequestHelper {
 		try {
 			defaultNum = Double.parseDouble(temp);
 		} catch (Exception ex) {
-			System.err.println(ex.toString());
+			ex.printStackTrace();
 		}
 		return defaultNum;
 	}
@@ -221,7 +221,7 @@ public class HttpRequestHelper {
 		try {
 			defaultNum = Long.parseLong(temp);
 		} catch (Exception ex) {
-			System.err.println(ex.toString());
+			ex.printStackTrace();
 		}
 		return defaultNum;
 	}
