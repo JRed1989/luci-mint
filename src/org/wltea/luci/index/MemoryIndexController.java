@@ -105,6 +105,10 @@ class MemoryIndexController implements Runnable{
 				//要求等待
 				try {
 					this.commandQueue.wait();
+					if(this.stopFlag){
+						//服务已停止
+						return;
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -141,7 +145,7 @@ class MemoryIndexController implements Runnable{
 		this.stopFlag = true;
 		synchronized(this.commandQueue){
 			this.commandQueue.clear();
-			this.commandQueue.notify();
+			this.commandQueue.notifyAll();
 		}
 		this.toBeAdded.clear();
 		this.toBeDeleted.clear();
@@ -167,7 +171,7 @@ class MemoryIndexController implements Runnable{
 				//线程被唤醒，取出所有的任务
 				commands = this.commandQueue.pollALL();
 				//唤醒生产者线程
-				this.commandQueue.notify();
+				this.commandQueue.notifyAll();
 			}
 			
 			if(commands != null){

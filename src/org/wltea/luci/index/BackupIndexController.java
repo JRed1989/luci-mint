@@ -98,6 +98,10 @@ class BackupIndexController implements Runnable {
 				//要求等待
 				try {
 					this.commandQueue.wait();
+					if(this.stopFlag){
+						//服务已停止
+						return;
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -113,7 +117,7 @@ class BackupIndexController implements Runnable {
 			if(immediately ||
 					this.commandQueue.size() >= this.context.getIndexConfig().getQueueTriggerCritical()){
 				//立即唤醒消费者（处理）线程
-				this.commandQueue.notify();
+				this.commandQueue.notifyAll();
 			}
 		}		
 	}	
@@ -126,7 +130,7 @@ class BackupIndexController implements Runnable {
 		this.optimization = false;
 		synchronized(this.commandQueue){
 			this.commandQueue.clear();
-			this.commandQueue.notify();
+			this.commandQueue.notifyAll();
 		}
 		this.toBeAdded.clear();
 		this.toBeDeleted.clear();
@@ -155,7 +159,7 @@ class BackupIndexController implements Runnable {
 				//线程被唤醒，取出所有的任务
 				commands = this.commandQueue.pollALL();
 				//唤醒生产者线程
-				this.commandQueue.notify();
+				this.commandQueue.notifyAll();
 			}
 			
 			if(commands != null){
