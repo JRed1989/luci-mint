@@ -159,12 +159,15 @@ public class LocalIndexService implements IndexService {
 		}
 
 		Sort querySort = null;
-		if(sortFieldName == null){
-			querySort = new Sort(new SortField(null , SortField.DOC ,reverse));
-		}else if(sortFieldType == null){
-			//sortFieldType = "STRING";
-			querySort = new Sort(new SortField(sortFieldName , SortField.STRING ,reverse));
-		}else{
+		if(sortFieldType == null || "DOC".equals(sortFieldType)){
+			//使用lucene docid 默认排序				
+		}else if("SCORE".equals(sortFieldType)){
+			//使用Lucene相识度评分排序
+			querySort = new Sort(new SortField(null , SortField.SCORE ,reverse));
+		}else {
+			if(sortFieldName == null){
+				throw new IllegalArgumentException("Unkown query mode. 'sortFieldName' is null.");
+			}
 			if("BYTE".equals(sortFieldType)){
 				querySort = new Sort(new SortField(sortFieldName , SortField.BYTE ,reverse));
 			}else if("SHORT".equals(sortFieldType)){
@@ -181,7 +184,7 @@ public class LocalIndexService implements IndexService {
 				querySort = new Sort(new SortField(sortFieldName , SortField.STRING ,reverse));
 			}else {
 				throw new IllegalArgumentException( "Unkown query mode. 'sortType' is Unkown.");
-			}
+			}				
 		}		
 		//Query String转成Lucene Query对象
 		Query query = IKQueryParser.parse(queryString);			
@@ -214,12 +217,15 @@ public class LocalIndexService implements IndexService {
 		}
 
 		Sort querySort = null;
-		if(sortFieldName == null){
-			querySort = new Sort(new SortField(null , SortField.DOC ,reverse));
-		}else if(sortFieldType == null){
-			//sortFieldType = "STRING";
-			querySort = new Sort(new SortField(sortFieldName , SortField.STRING ,reverse));
-		}else{
+		if(sortFieldType == null || "DOC".equals(sortFieldType)){
+			//使用lucene docid 默认排序				
+		}else if("SCORE".equals(sortFieldType)){
+			//使用Lucene相识度评分排序
+			querySort = new Sort(new SortField(null , SortField.SCORE ,reverse));
+		}else {
+			if(sortFieldName == null){
+				throw new IllegalArgumentException("Unkown query mode. 'sortFieldName' is null.");
+			}
 			if("BYTE".equals(sortFieldType)){
 				querySort = new Sort(new SortField(sortFieldName , SortField.BYTE ,reverse));
 			}else if("SHORT".equals(sortFieldType)){
@@ -236,8 +242,8 @@ public class LocalIndexService implements IndexService {
 				querySort = new Sort(new SortField(sortFieldName , SortField.STRING ,reverse));
 			}else {
 				throw new IllegalArgumentException( "Unkown query mode. 'sortType' is Unkown.");
-			}
-		}		
+			}				
+		}			
 		//Query String转成Lucene Query对象
 		Query query = IKQueryParser.parse(queryString);			
 		return this.query(query, pageNo, pageSize, querySort, true);
