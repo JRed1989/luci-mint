@@ -854,7 +854,7 @@ public class IndexContext {
 					 //如果主索引正在优化，则不允许执行迁移
 					 if(!mainIndexOptFlag){
 						 System.out.println(new Date() + " : " + indexConfig.getIndexName() + " begin migrate... ");
-						 if(indexConfig.isEnableBackup()){
+						 if(indexConfig.getEliminatePolicy() != null){
 							 //主索引过期清理
 							 this.context.cleanup();
 						 }
