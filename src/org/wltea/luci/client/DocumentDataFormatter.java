@@ -95,7 +95,8 @@ public class DocumentDataFormatter extends BasicDataFormatter{
 					String index = readDocFieldIndex(beanField);
 					if(FieldIndex.NO_INDEX.equals(index)){
 						docFieldIndex = Index.NO;
-					}else if(FieldIndex.NOT_ANALYZED.equals(index)){
+					}else if(FieldIndex.NOT_ANALYZED.equals(index) 
+							|| FieldIndex.NO_ANALYZED.equals(index)){
 						docFieldIndex = Index.NOT_ANALYZED_NO_NORMS;
 					}else if(FieldIndex.ANALYZED.equals(index)){
 						docFieldIndex = Index.ANALYZED_NO_NORMS;

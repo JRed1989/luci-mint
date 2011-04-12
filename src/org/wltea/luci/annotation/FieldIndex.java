@@ -27,6 +27,7 @@ public @interface FieldIndex {
 	 * 索引不分词
 	 */
 	public static final String NOT_ANALYZED = "NOT_ANALYZED";
+	public static final String NO_ANALYZED = "NO_ANALYZED";
 	
 	/**
 	 * 索引且分词
