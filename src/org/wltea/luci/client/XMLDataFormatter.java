@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.wltea.luci.annotation.FieldIndex;
 import org.wltea.luci.annotation.FieldStore;
 import org.wltea.luci.annotation.PKey;
+import org.wltea.luci.annotation.SkipEscape;
 
 
 /**
@@ -84,7 +85,11 @@ public class XMLDataFormatter extends BasicDataFormatter{
 			if(docFieldValue != null){
 				Element_Field eleField = new Element_Field();
 				eleField.name = beanField.getName();
-				eleField.value = regularizeXmlString(docFieldValue);
+				if(beanField.getAnnotation(SkipEscape.class) == null){				
+					eleField.value = regularizeXmlString(docFieldValue);
+				}else{
+					eleField.value = docFieldValue;
+				}
 					
 				//处理PKey属性
 				PKey pKeyAnno = beanField.getAnnotation(PKey.class);
