@@ -197,7 +197,8 @@ public class XMLDataFormatter extends BasicDataFormatter{
 				sb.append("store=\"").append(true).append("\" ");
 			}
 			//index
-			if(FieldIndex.NOT_ANALYZED.equals(index)){
+			if(FieldIndex.NOT_ANALYZED.equals(index)
+					|| FieldIndex.NO_ANALYZED.equals(index)){
 				sb.append("index=\"").append(FieldIndex.NOT_ANALYZED).append("\" ");
 			}else if(FieldIndex.ANALYZED.equals(index)){
 				sb.append("index=\"").append(FieldIndex.ANALYZED).append("\" ");				
