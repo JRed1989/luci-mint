@@ -17,7 +17,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
-import org.apache.lucene.search.ParallelMultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Searchable;
@@ -700,7 +699,7 @@ public class IndexContext {
 		if(memSearcher != null && mainSearcher != null){
 			try {
 				//发现一个索引的排序问题，跟searcher的排序有关
-				theSearcher = new ParallelMultiSearcher(new Searcher[]{mainSearcher , memSearcher});
+				theSearcher = new MultiSearcher(new Searcher[]{mainSearcher , memSearcher});
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
