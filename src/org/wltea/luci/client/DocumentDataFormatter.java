@@ -51,7 +51,7 @@ public class DocumentDataFormatter extends BasicDataFormatter{
 		Field[] fields = dataBeanClass.getDeclaredFields();
 		//将Bean的属性转成lucene document的Field
 		boolean foundPkey = false;
-		for(Field beanField : fields){
+		for(Field beanField : fields){			
 			beanField.setAccessible(true);
 			//忽略serialVersionUID属性
 			if (beanField.getName().equals("serialVersionUID")){

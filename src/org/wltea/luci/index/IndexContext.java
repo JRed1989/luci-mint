@@ -14,13 +14,11 @@ import java.util.TimerTask;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Searchable;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
@@ -416,7 +414,7 @@ public class IndexContext {
 		}
 		
 		//3.获取查询器
-		Searcher seeker = null;
+		IndexSearcher seeker = null;
 		if(inBackupIndex && indexConfig.isEnableBackup()){
 			seeker = this.getBackupIndexSearcher();
 		}else{
@@ -585,7 +583,8 @@ public class IndexContext {
 			e.printStackTrace();
 		}
 		return cloneReader;
-	}	
+	}
+	
 
 	public boolean isMemoryIndexOptimizing() {
 		return memoryIndexOptFlag;
@@ -681,34 +680,26 @@ public class IndexContext {
 	 * 获取索引搜索器
 	 * @return
 	 */
-	private Searcher getIndexSearcher(){
+	private IndexSearcher getIndexSearcher(){
 		//1.获取内存索引读取器
 		IndexReader memReader = this.getMemoryIndexReader();
-		Searcher memSearcher = null;
-		if(memReader != null){
-			memSearcher = new IndexSearcher(memReader);
-		}
+
 		//2.获取主索引读取器
 		IndexReader mainReader = this.getMainIndexReader();
-		Searcher mainSearcher = null;
-		if(mainReader != null){
-			mainSearcher = new IndexSearcher(mainReader);
-		}
 		
-		Searcher theSearcher = null;
-		if(memSearcher != null && mainSearcher != null){
-			try {
-				//发现一个索引的排序问题，跟searcher的排序有关
-				theSearcher = new MultiSearcher(new Searcher[]{mainSearcher , memSearcher});
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}else if(memSearcher != null){
-			theSearcher = memSearcher;
+		IndexReader theIndexReader= null;
+		if(memReader != null && mainReader != null){
+			//发现一个索引的排序问题，跟searcher的排序有关
+			theIndexReader = new MultiReader(new IndexReader[]{mainReader , memReader});
+
+		}else if(memReader != null){
+			theIndexReader = memReader;
+			
 		}else {
-			theSearcher = mainSearcher;
-		}		
-		
+			theIndexReader = mainReader;
+		}
+		//3.构建查询器
+		IndexSearcher theSearcher = new IndexSearcher(theIndexReader);
 		return theSearcher;
 	}
 	
@@ -716,13 +707,13 @@ public class IndexContext {
 	 * 获取备份索引搜索器
 	 * @return
 	 */
-	private Searcher getBackupIndexSearcher(){
+	private IndexSearcher getBackupIndexSearcher(){
 		if(!indexConfig.isEnableBackup()){
 			throw new UnsupportedOperationException("没有可用的备份索引器!");
 		}
 		//1.获取索引读取器
 		IndexReader backupReader = this.getBackupIndexReader();
-		Searcher backupSearcher = null;
+		IndexSearcher backupSearcher = null;
 		if(backupReader != null){
 			backupSearcher = new IndexSearcher(backupReader);
 		}		
@@ -730,29 +721,22 @@ public class IndexContext {
 	}
 	
 	/**
-	 * 递归关闭查询器
-	 * 关闭查询器中的reader
-	 * @param searchable
+	 * 关闭传入IndexSearcher的reader
+	 * @param indexSearcher
 	 */
-	private void closeSearcher(Searchable searchable){
-		if(searchable != null){
-			if(searchable instanceof MultiSearcher){
-				Searchable[] searchables = ((MultiSearcher)searchable).getSearchables();
-				for(Searchable s : searchables){
-					closeSearcher(s);
-				}
-			}
-			if(searchable instanceof IndexSearcher){
-				IndexReader reader = ((IndexSearcher)searchable).getIndexReader();
+	private void closeSearcher(IndexSearcher indexSearcher){
+		if(indexSearcher != null){
+			IndexReader indexReader = indexSearcher.getIndexReader();
+			if(indexReader != null){
 				try {
-					reader.close();
+					indexReader.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-		}		
-	}	
-
+		}
+	}
+	
 	/**
 	 * 从主索引删除过期的索引
 	 * 每次迁移的文档数量不超过 indexConfig.getMaxMigrateDocs()
@@ -796,7 +780,7 @@ public class IndexContext {
 				if(mainIndexReader != null){
 					List<Document> docs = new ArrayList<Document>();
 					//构建搜索器
-					Searcher searcher = new IndexSearcher(mainIndexReader);
+					IndexSearcher searcher = new IndexSearcher(mainIndexReader);
 					//搜索文档ID
 					TopDocs topDocs = searcher.search(query, this.indexConfig.getMaxMigrateDocs());
 					//取文档内容

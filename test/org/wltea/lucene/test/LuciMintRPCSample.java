@@ -29,7 +29,7 @@ public class LuciMintRPCSample {
 	public static void main(String[] args){		
 	
 		URL remoteHttpURL = null;
-		try {
+		try {			
 			remoteHttpURL = new URL("http://10.5.21.86/sc/web/indexservice");
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();

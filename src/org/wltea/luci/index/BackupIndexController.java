@@ -12,11 +12,15 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.LogByteSizeMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Version;
 
 import org.wltea.luci.index.IndexCommand.Status;
 
@@ -397,19 +401,30 @@ class BackupIndexController implements Runnable {
 	 * @throws IOException
 	 */
 	private IndexWriter openWriter(Directory dir , boolean create) throws CorruptIndexException, LockObtainFailedException, IOException{
-		IndexWriter indexWriter = new IndexWriter(dir ,	context.getIndexConfig().getLuceneAnalyzer(), create , IndexWriter.MaxFieldLength.LIMITED);
-		//是否将多个segment合并
-		indexWriter.setUseCompoundFile(false);
-		//设置文档中Field的最大可容纳Term的数目
-		indexWriter.setMaxFieldLength(this.context.getIndexConfig().getMaxFieldLength());
+		//配置IndexWriterConfig
+		IndexWriterConfig iwConfig = new IndexWriterConfig(Version.LUCENE_34 , context.getIndexConfig().getLuceneAnalyzer());
+		if(create){
+			iwConfig.setOpenMode(OpenMode.CREATE);
+		}else{
+			iwConfig.setOpenMode(OpenMode.APPEND);
+		}
 		//设置索引时，内存的最大缓冲文档数目
-		indexWriter.setMaxBufferedDocs(this.context.getIndexConfig().getBufferedDocs());
+		iwConfig.setMaxBufferedDocs(this.context.getIndexConfig().getBufferedDocs());
 		//设置索引时，内存的最大缓冲
-		indexWriter.setRAMBufferSizeMB(this.context.getIndexConfig().getRAMBufferSizeMB());					
+		iwConfig.setRAMBufferSizeMB(this.context.getIndexConfig().getRAMBufferSizeMB());
+		
+		//设置索引合并策略
+		LogByteSizeMergePolicy mergePolicy = new LogByteSizeMergePolicy();
+		//是否将多个segment合并
+		mergePolicy.setUseCompoundFile(false);
 		//设置合并参数,History库是Main的两倍
-		indexWriter.setMergeFactor(this.context.getIndexConfig().getMergeFactor() * 2);
+		mergePolicy.setMergeFactor(this.context.getIndexConfig().getMergeFactor() * 2);
 		//设置每个index segment的最大文档数目
-		indexWriter.setMaxMergeDocs(this.context.getIndexConfig().getMaxMergeDocs());
+		mergePolicy.setMaxMergeDocs(this.context.getIndexConfig().getMaxMergeDocs());
+		iwConfig.setMergePolicy(mergePolicy);
+		
+		//根据配置生成IndexWriter
+		IndexWriter indexWriter = new IndexWriter(dir , iwConfig);
 		return indexWriter;
 	}		
 
